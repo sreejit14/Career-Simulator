@@ -24,10 +24,11 @@ def load_bundle(path: str = "salary_predictor_final.pkl"):
     return _model_bundle
 
 def _encode_row(bundle: dict, row: pd.Series) -> np.ndarray:
-    le_edu = bundle["encoders"]["education"]
-    le_loc = bundle["encoders"]["location"]
-    le_job = bundle["encoders"]["job_title"]
-    le_gen = bundle["encoders"]["gender"]
+    le_edu = bundle["le_education"]
+    le_loc = bundle["le_location"]
+    le_job = bundle["le_job_title"]
+    le_gen = bundle["le_gender"]
+
 
     return np.array([
         le_edu.transform([row["Education"]])[0],

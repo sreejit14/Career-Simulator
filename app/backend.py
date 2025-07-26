@@ -12,7 +12,7 @@ JOB_PATHS = ["Analyst", "Engineer", "Manager", "Director"]
 # ---------- Model I/O ----------
 _model_bundle = None
 
-def load_bundle(path: str = "salary_model.joblib"):
+def load_bundle(path: str = "salary_model.pkl"):
     global _model_bundle
     if _model_bundle is not None:
         return _model_bundle

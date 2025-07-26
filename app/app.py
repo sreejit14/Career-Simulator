@@ -7,7 +7,7 @@ import backend as be   # local import
 # ---------- Load model ----------
 @st.cache_resource
 def get_bundle():
-    return be.load_bundle("app/salary_model.pkl")
+    return be.load_bundle("app/salary_predictor_final.pkl")
 
 bundle = get_bundle()
 

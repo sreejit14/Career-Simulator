@@ -12,14 +12,15 @@ Explore skills-gap insights with feature-importance metrics and SHAP explanation
 
 Easily configure candidate profiles (education, experience, location, gender, age) and scenario levers (promotion year/role, education year/level, training cost)
 
-#Project Structure
-text
+# Project Structure
+
 career_simulator/
 ├── app.py            # Streamlit UI: inputs, charts & layout  
 ├── backend.py        # Core logic: model I/O, encoding, simulation, ROI  
 ├── salary_model.joblib  # Pre-trained model + encoders bundle  
 └── requirements.txt  # Python dependencies
-#Quick Start
+
+# Quick Start
 Clone this repository and install dependencies:
 
 bash
@@ -28,7 +29,7 @@ cd career_simulator
 pip install -r requirements.txt
 Add your serialized model bundle as salary_model.joblib.
 
-#Run the app:
+# Run the app:
 
 bash
 streamlit run app.py
@@ -43,7 +44,7 @@ Custom Scenarios: Set promotion timing, target role, education upgrades, and tra
 
 -Modular Design: Separate UI (app.py) and backend (backend.py) for easy debugging and testing
 
-#Deployment
+# Deployment
 Push to GitHub and deploy on Streamlit Community Cloud:
 
 Commit & push all files to your repo.

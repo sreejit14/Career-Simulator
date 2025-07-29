@@ -32,7 +32,7 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
         bins=[0, 5, 15, float('inf')], 
         labels=['Early_Career', 'Mid_Career', 'Late_Career'],
         include_lowest=True
-    )
+        )
     
     # Binary flags for career stages
     df['Early_Career'] = (df['Experience_Group'] == 'Early_Career').astype(int)

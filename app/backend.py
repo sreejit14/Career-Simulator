@@ -72,21 +72,27 @@ def simulate(
     edu_year: int,
     edu_target: str,
 ) -> pd.DataFrame:
+    # Only use the original 6 features for the base row
+    # The engineered features will be added by add_engineered_features() in predict_salary()
     features = ["Education", "Experience", "Location", "Job_Title", "Age", "Gender"]
+    
     records = []
     for y in range(years + 1):
         r = base_row.copy()
         r["Year"] = y
         r["Experience"] = base_row["Experience"] + y
         r["Age"] = base_row["Age"] + y
+        
+        # Apply promotions and education changes
         if y >= promo_year:
             r["Job_Title"] = promo_title
         if y >= edu_year:
             r["Education"] = edu_target
-        # Use only the actual features for prediction!
         row_for_pred = r[features]
+        
         r["Predicted_Salary"] = predict_salary(row_for_pred)
         records.append(r)
+    
     return pd.DataFrame(records)
 
 

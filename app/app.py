@@ -29,8 +29,8 @@ edu_cost = st.sidebar.number_input("Cost of education ($)", 0, 200000, 20000, 10
 # ---------- Run simulation ----------
 baseline_df = be.simulate(
     base_row, years,
-    promo_year=years + 1, promo_title=profile["Job_Title"],
-    edu_year=years + 1, edu_target=profile["Education"]
+    promo_year=years, promo_title=profile["Job_Title"],
+    edu_year=years, edu_target=profile["Education"]
 )
 scenario_df = be.simulate(
     base_row, years,

@@ -19,7 +19,7 @@ def load_model(path: str = "app/salary_predictor_final.pkl"):
     file = Path(path)
     if not file.exists():
         raise FileNotFoundError(f"{path} not found. Place your model pipeline here.")
-    _model = joblib.load(path)
+    _model = pickle.load(path)
     return _model
 
 def predict_salary(row: pd.Series) -> float:

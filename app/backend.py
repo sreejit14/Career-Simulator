@@ -23,10 +23,9 @@ def load_model(path: str = "app/salary_predictor_final.pkl"):
     return _model
 
 def predict_salary(row: pd.Series) -> float:
-    loaded_obj = load_model()
-    # If it's a dict (bundle), extract the 'model' key
-    model = loaded_obj['model'] if isinstance(loaded_obj, dict) else loaded_obj
+    model = load_model()
     X = pd.DataFrame([row])
+    X = add_engineered_features(X) 
     return float(model.predict(X)[0])
 
 # ---------- Simulator ----------

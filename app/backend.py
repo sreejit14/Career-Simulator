@@ -26,22 +26,21 @@ def load_model(path: str = "app/salary_predictor_final.pkl"):
 def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     
-    # Experience groups 
+    # Experience groups
     df['Experience_Group'] = pd.cut(
-        df['Experience'], 
-        bins=[0, 5, 15, float('inf')], 
+        df['Experience'],
+        bins=[0, 5, 15, float('inf')],
         labels=['Early_Career', 'Mid_Career', 'Late_Career'],
-        include_lowest=True
-        )
+        include_lowest=True)
     
     # Binary flags for career stages
     df['Early_Career'] = (df['Experience_Group'] == 'Early_Career').astype(int)
-    df['Mid_Career'] = (df['Experience_Group'] == 'Mid_Career').astype(int) 
+    df['Mid_Career'] = (df['Experience_Group'] == 'Mid_Career').astype(int)
     df['Late_Career'] = (df['Experience_Group'] == 'Late_Career').astype(int)
     
     # Polynomial and ratio features
     df['Experience_Sq'] = df['Experience'] ** 2
-    df['Experience_Per_Age'] = df['Experience'] / df['Age']
+    df['Experience_Per_Age'] = df['Experience'] / (df['Age'] + 1e-6)  # Add small epsilon to prevent division by zero
     
     # Manager/Director flag
     df['Manager_Director'] = df['Job_Title'].isin(['Manager', 'Director']).astype(int)
@@ -57,11 +56,26 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+
 def predict_salary(row: pd.Series) -> float:
     model = load_model()
     X = pd.DataFrame([row])
-    X = add_engineered_features(X) 
-    return float(model.predict(X)[0])
+    X = add_engineered_features(X)
+    
+    # Debug: Print the data being sent to the model
+    print("Columns:", X.columns.tolist())
+    print("Data types:", X.dtypes.to_dict())
+    print("Sample values:", X.iloc[0].to_dict())
+    print("Any NaN values:", X.isnull().sum().sum())
+    print("Any infinite values:", np.isinf(X.select_dtypes(include=[np.number])).sum().sum())
+    
+    try:
+        prediction = model.predict(X)
+        return float(prediction[0])
+    except Exception as e:
+        print(f"Model prediction error: {e}")
+        print(f"Error type: {type(e)}")
+        raise e
 
 # ---------- Simulator ----------
 def simulate(

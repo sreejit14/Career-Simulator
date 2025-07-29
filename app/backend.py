@@ -12,7 +12,7 @@ JOB_PATHS = ["Analyst", "Engineer", "Manager", "Director"]
 # ---------- Model I/O ----------
 _model = None
 
-def load_model(path: str = "salary_predictor.joblib"):
+def load_model(path: str = "app/salary_predictor.joblib"):
     global _model
     if _model is not None:
         return _model
@@ -27,7 +27,6 @@ def predict_salary(row: pd.Series) -> float:
     Predict salary for a single profile row.
     """
     model = load_model()
-    # Ensure feature order matches what the pipeline expects!
     X = pd.DataFrame([row])
     return float(model.predict(X)[0])
 
@@ -49,15 +48,12 @@ def simulate(
         r["Year"] = y
         r["Experience"] = base_row["Experience"] + y
         r["Age"] = base_row["Age"] + y
-
         if y >= promo_year:
             r["Job_Title"] = promo_title
         if y >= edu_year:
             r["Education"] = edu_target
-
         r["Predicted_Salary"] = predict_salary(r)
         records.append(r)
-
     return pd.DataFrame(records)
 
 def salary_lift_and_roi(

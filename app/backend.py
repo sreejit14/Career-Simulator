@@ -12,7 +12,7 @@ JOB_PATHS = ["Analyst", "Engineer", "Manager", "Director"]
 # ---------- Model I/O ----------
 _model = None
 
-def load_model(path: str = "salary_predictor.pkl"):
+def load_model(path: str = "salary_predictor_final.pkl"):
     global _model
     if _model is not None:
         return _model

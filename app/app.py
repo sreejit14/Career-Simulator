@@ -6,10 +6,10 @@ import backend as be   # local import
 
 # ---------- Load model ----------
 @st.cache_resource
-def get_bundle():
-    return be.load_bundle("app/salary_predictor_final.pkl")
+def get_model():
+    return be.load_model("app/salary_predictor_final.pkl")
 
-bundle = get_bundle()
+model = get_model()
 
 # ---------- Sidebar inputs ----------
 st.sidebar.header("🎛️  Candidate profile")
@@ -33,15 +33,15 @@ edu_target = st.sidebar.selectbox("Target education", be.EDU_ORDER, 2)
 edu_cost   = st.sidebar.number_input("Cost of education ($)", 0, 200000, 20000, 1000)
 
 # ---------- Run simulation ----------
-baseline_df = be.simulate(bundle, base_row, years,
+baseline_df = be.simulate(base_row, years,
                           promo_year=years+1, promo_title=profile["Job_Title"],
                           edu_year=years+1, edu_target=profile["Education"])
-scenario_df = be.simulate(bundle, base_row, years,
+scenario_df = be.simulate(base_row, years,
                           promo_year, promo_role, edu_year, edu_target)
 lift, roi = be.salary_lift_and_roi(baseline_df, scenario_df, edu_cost)
 
 # ---------- Main page ----------
-st.title("🚀 Career Path Salary Simulator")
+st.title("🚀 Career Simulator")
 
 col1, col2 = st.columns(2)
 col1.metric("Current salary",

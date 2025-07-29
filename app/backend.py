@@ -39,9 +39,7 @@ def simulate(
     edu_year: int,
     edu_target: str,
 ) -> pd.DataFrame:
-    """
-    Build a DataFrame with yearly salary projections under the given scenario.
-    """
+    features = ["Education", "Experience", "Location", "Job_Title", "Age", "Gender"]
     records = []
     for y in range(years + 1):
         r = base_row.copy()
@@ -52,9 +50,12 @@ def simulate(
             r["Job_Title"] = promo_title
         if y >= edu_year:
             r["Education"] = edu_target
-        r["Predicted_Salary"] = predict_salary(r)
+        # Use only the actual features for prediction!
+        row_for_pred = r[features]
+        r["Predicted_Salary"] = predict_salary(row_for_pred)
         records.append(r)
     return pd.DataFrame(records)
+
 
 def salary_lift_and_roi(
     baseline_df: pd.DataFrame,

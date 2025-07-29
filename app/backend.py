@@ -1,6 +1,6 @@
 # backend.py
 
-import pickle
+import joblib
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -10,47 +10,29 @@ EDU_ORDER = ["High School", "Bachelor", "Master", "PhD"]
 JOB_PATHS = ["Analyst", "Engineer", "Manager", "Director"]
 
 # ---------- Model I/O ----------
-_model_bundle = None
+_model = None
 
-def load_bundle(path: str = "salary_predictor.pkl"):
-    """
-    Load and cache the trained model bundle using pickle.
-    """
-    global _model_bundle
-    if _model_bundle is not None:
-        return _model_bundle
-
+def load_model(path: str = "salary_predictor.joblib"):
+    global _model
+    if _model is not None:
+        return _model
     file = Path(path)
     if not file.exists():
-        raise FileNotFoundError(f"{path} not found. Place your pickle bundle here.")
-    with open(path, "rb") as f:
-        _model_bundle = pickle.load(f)
-    return _model_bundle
+        raise FileNotFoundError(f"{path} not found. Place your model pipeline here.")
+    _model = joblib.load(path)
+    return _model
 
-def _encode_row(bundle: dict, row: pd.Series) -> np.ndarray:
-    le_edu = bundle["encoders"]["education"]
-    le_loc = bundle["encoders"]["location"]
-    le_job = bundle["encoders"]["job_title"]
-    le_gen = bundle["encoders"]["gender"]
-    return np.array([
-        le_edu.transform([row["Education"]])[0],
-        row["Experience"],
-        le_loc.transform([row["Location"]])[0],
-        le_job.transform([row["Job_Title"]])[0],
-        row["Age"],
-        le_gen.transform([row["Gender"]])[0],
-    ]).reshape(1, -1)
-
-def predict_salary(bundle: dict, row: pd.Series) -> float:
+def predict_salary(row: pd.Series) -> float:
     """
     Predict salary for a single profile row.
     """
-    X = _encode_row(bundle, row)
-    return float(bundle["model"].predict(X)[0])
+    model = load_model()
+    # Ensure feature order matches what the pipeline expects!
+    X = pd.DataFrame([row])
+    return float(model.predict(X)[0])
 
 # ---------- Simulator ----------
 def simulate(
-    bundle: dict,
     base_row: pd.Series,
     years: int,
     promo_year: int,
@@ -73,7 +55,7 @@ def simulate(
         if y >= edu_year:
             r["Education"] = edu_target
 
-        r["Predicted_Salary"] = predict_salary(bundle, r)
+        r["Predicted_Salary"] = predict_salary(r)
         records.append(r)
 
     return pd.DataFrame(records)

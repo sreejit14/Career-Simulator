@@ -21,37 +21,41 @@ def load_model(path: str = "app/salary_predictor_final.pkl"):
         raise FileNotFoundError(f"{path} not found. Place your model pipeline here.")
     _model = joblib.load(path)
     return _model
+
+
 def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
-    # Make a copy to avoid side effects
     df = df.copy()
     
-    # Experience groups - example bins, adjust as needed
+    # Experience groups 
     df['Experience_Group'] = pd.cut(
-        df['Experience'],
-        bins=[0, 5, 15, 30, 100],
-        labels=['Early_Career', 'Mid_Career', 'Late_Career', 'Expert'],
-        include_lowest=True,
-        right=False
+        df['Experience'], 
+        bins=[0, 5, 15, float('inf')], 
+        labels=['Early_Career', 'Mid_Career', 'Late_Career'],
+        include_lowest=True
     )
-
+    
+    # Binary flags for career stages
     df['Early_Career'] = (df['Experience_Group'] == 'Early_Career').astype(int)
-    df['Mid_Career'] = (df['Experience_Group'] == 'Mid_Career').astype(int)
+    df['Mid_Career'] = (df['Experience_Group'] == 'Mid_Career').astype(int) 
     df['Late_Career'] = (df['Experience_Group'] == 'Late_Career').astype(int)
-
-    # Derived features
+    
+    # Polynomial and ratio features
     df['Experience_Sq'] = df['Experience'] ** 2
-    df['Experience_Per_Age'] = df['Experience'] / (df['Age'] + 1e-4)  # avoid division by zero
-
-    # Manager or Director flag
+    df['Experience_Per_Age'] = df['Experience'] / df['Age']
+    
+    # Manager/Director flag
     df['Manager_Director'] = df['Job_Title'].isin(['Manager', 'Director']).astype(int)
-
-    # Combined logic flags
+    
+    # Education-Experience combinations
     df['HighExp_LowEdu'] = ((df['Experience'] > 15) & (df['Education'] == 'High School')).astype(int)
     df['LowExp_HighEdu'] = ((df['Experience'] < 5) & (df['Education'].isin(['PhD', 'Master']))).astype(int)
+    
+    # Interaction features
     df['Education_Job_Interaction'] = df['Education'] + '_' + df['Job_Title']
     df['PhD_Experience'] = ((df['Education'] == 'PhD') & (df['Experience'] > 10)).astype(int)
-
+    
     return df
+
 
 def predict_salary(row: pd.Series) -> float:
     model = load_model()

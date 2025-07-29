@@ -1,6 +1,6 @@
 # backend.py
 
-import joblib
+import pickle
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -12,24 +12,26 @@ JOB_PATHS = ["Analyst", "Engineer", "Manager", "Director"]
 # ---------- Model I/O ----------
 _model_bundle = None
 
-def load_bundle(path: str = "salary_predictor_final.pkl"):
+def load_bundle(path: str = "salary_predictor.pkl"):
+    """
+    Load and cache the trained model bundle using pickle.
+    """
     global _model_bundle
     if _model_bundle is not None:
         return _model_bundle
 
     file = Path(path)
     if not file.exists():
-        raise FileNotFoundError(f"{path} not found. Place your joblib bundle here.")
-    _model_bundle = joblib.load(path)
+        raise FileNotFoundError(f"{path} not found. Place your pickle bundle here.")
+    with open(path, "rb") as f:
+        _model_bundle = pickle.load(f)
     return _model_bundle
 
 def _encode_row(bundle: dict, row: pd.Series) -> np.ndarray:
-    le_edu = bundle["le_education"]
-    le_loc = bundle["le_location"]
-    le_job = bundle["le_job_title"]
-    le_gen = bundle["le_gender"]
-
-
+    le_edu = bundle["encoders"]["education"]
+    le_loc = bundle["encoders"]["location"]
+    le_job = bundle["encoders"]["job_title"]
+    le_gen = bundle["encoders"]["gender"]
     return np.array([
         le_edu.transform([row["Education"]])[0],
         row["Experience"],

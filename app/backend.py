@@ -62,13 +62,6 @@ def predict_salary(row: pd.Series) -> float:
     X = pd.DataFrame([row])
     X = add_engineered_features(X)
     
-    # Debug: Print the data being sent to the model
-    print("Columns:", X.columns.tolist())
-    print("Data types:", X.dtypes.to_dict())
-    print("Sample values:", X.iloc[0].to_dict())
-    print("Any NaN values:", X.isnull().sum().sum())
-    print("Any infinite values:", np.isinf(X.select_dtypes(include=[np.number])).sum().sum())
-    
     try:
         prediction = model.predict(X)
         return float(prediction[0])
